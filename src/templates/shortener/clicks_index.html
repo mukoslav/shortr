@@ -1,0 +1,32 @@
+{% extends "shortener/base.html" %}
+{% block body_block %}
+
+{% if clicks.count > 0 %}
+  <h4>CLICKS:</h4>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>ip</th>
+        <th>country</th>
+        <th>link id</th>
+        <th>created at</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for click in clicks %}
+        <tr>
+          <td><a href="/shortener/clicks/{{ shorturl_id }}/{{ click.ip }}">{{ click.ip }}</a></td>
+          <td>{{ click.country }}</td>
+          <td>{{ click.link_id }}</td>
+          <td>{{ click.created_at }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% else %}
+  <h4>NO CLICKS FOR SHORT LINK!</h4>
+{% endif %}
+
+
+{% endblock %}

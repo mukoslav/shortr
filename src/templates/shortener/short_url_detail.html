@@ -1,0 +1,93 @@
+{% extends "shortener/base.html" %}
+{% block body_block %}
+<h3>SHORT URL: <span style="color:green";>{{ short_url.url }}</span></h3>
+
+<div>
+  <form name="f1" method="post" action="{% url 'shortener:update_default_link' short_url.id %}">
+  {% csrf_token %}
+  <label for="default">default landing page: </label>
+  <input id="default" type="text" name="default" maxlength="220" value={{ short_url.default }}>
+  <label for="default">active: </label>
+  {% if short_url.active %}
+    <input id="active" type="checkbox" name="active" checked>
+  {% else %}
+    <input id="active" type="checkbox" name="active" >
+  {% endif %}
+  <input type="submit" name="a" value="Update short url">
+  </form>
+</div>
+
+<br>
+<br>
+
+{% if links.count > 0 %}
+  <h4>LANDING PAGES (click to edit):</h4>
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>url</th>
+        <th>weight</th>
+        <th>country specific</th>
+        <th>active</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for link in links %}
+        <tr>
+          <td><a href="/shortener/link/{{ link.id }}">{{ link.url }}</a></td>
+          <td>{{ link.weight }}</td>
+          <td>{{ link.country_specific }}</td>
+          <td>{{ link.active }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+{% else %}
+  <br>
+  <h4 style="color:red;">NO LANDING PAGES FOR THIS SHORT LINK!</h4>
+  <br>
+  <br>
+{% endif %}
+
+<h4>ADD NEW LANDING PAGE:</h4>
+
+<div>
+  <form name="f2" method="post" action="{% url 'shortener:create_new_link' short_url.id %}">
+  {% csrf_token %}
+  <label for="url">url: </label>
+  <input id="url" type="text" name="url" maxlength="220" required>
+  <label for="country_specific">country specific(iso codes): </label>
+  <input id="country_specific" type="text" name="country_specific">
+  <label for="weight">weight: </label>
+  <input id="weight" type="number" name="weight" step="any" min="0.0" max="1.0">
+  <label for="active">active: </label>
+  <input id="active" type="checkbox" name="active">
+  <input type="submit" name="b" value="Generate new landing page">
+  </form>
+</div>
+
+<br>
+<br>
+
+{% if clicks.count > 0 %}
+  <h4>STATS:</h4>
+  <p><a href="/shortener/clicks/{{ short_url.id }}">CLICKS</a></p>
+  <p> number of clicks: {{ clicks|length }} <p>
+  <p>last visitor: <a href="/shortener/clicks/{{ short_url.id }}/{{ clicks.last.ip }}">{{ clicks.last }}</a></p>
+  <p> countries: {{ countries }} <p>
+  <p> unique users: {{ users }} <p>
+  <p> graph (number of clicks in last 24h):<p>
+  <svg width="720" height="225" version="1.1" xmlns="http://www.w3.org/2000/svg">
+    {% for hour in distribution%}
+      <rect x={{ hour.1 }} y={{ hour.2 }} width=20 height={{ hour.3 }} stroke="black" fill=#b3f442 stroke-width="1"/>
+      <text x={{ hour.1 }} y="225" font-size="10px" font-style="italic" fill=#ff6c4f>{{ hour.0 }}</text>
+      <text x={{ hour.1 }} y=10 font-size="10px" font-style="italic" fill=#ff6c4f>{{ hour.4 }}</text>
+    {% endfor %}
+  </svg>
+{% endif %}
+
+<br>
+<br>
+
+{% endblock %}

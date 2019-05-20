@@ -1,0 +1,37 @@
+{% extends "shortener/base.html" %}
+{% block body_block %}
+  <p>LINK: {{ link.id }}</p>
+  <br>
+  <br>
+  <div>
+    <form name="f2" method="post" action="{% url 'shortener:update_link' link.id %}">
+    {% csrf_token %}
+
+    <label for="url">url: </label>
+    <input id="url" type="text" name="url" maxlength="220", value={{ link.url }} required>
+    <br>
+    <label for="country_specific">country specific: </label>
+    <input id="country_specific" type="text" name="country_specific", value={{ link.country_specific }}>
+    <br>
+    <label for="weight">weight: </label>
+    <input id="weight" type="number" name="weight" step="any" min="0.0" max="1.0" value={{ link.weight }} >
+    <br>
+    <label for="active">active: </label>
+    {% if link.active %}
+      <input id="active" type="checkbox" name="active" checked>
+    {% else %}
+      <input id="active" type="checkbox" name="active" >
+    {% endif %}
+    <br>
+    <input type="submit" name="b" value="Update landing page">
+    </form>
+  </div>
+  <br>
+  <br>
+  <div>
+    <form name="f3" method="post" action="{% url 'shortener:remove_link' link.id %}">
+    {% csrf_token %}
+    <input type="submit" name="b" value="Delete landing page">
+    </form>
+  </div>
+{% endblock %}

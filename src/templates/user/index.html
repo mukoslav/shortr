@@ -1,0 +1,72 @@
+{% extends "user/base.html" %}
+{% block body_block %}
+<div class="container">
+  <div>
+    {% if user.is_authenticated %}
+        <p> Hello {{ user.username }} </p>
+    {% else %}
+        <h2>Register or Login if you'd like to</h2>
+    {% endif %}
+    <br>
+    {% if short_urls %}
+    <table class="table table-bordered">
+      <thead>
+        <tr>
+          <th>url</th>
+          <th>default link</th>
+          <th>active</th>
+          <th>created at</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for short_url in short_urls %}
+          <tr>
+            <td><a href="/shortener/short_url/{{ short_url.id }}">{{ short_url }}</a></td>
+            <td>{{ short_url.default }}</td>
+            <td>{{ short_url.active }}</td>
+            <td>{{ short_url.created_at }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {% if short_urls.has_other_pages %}
+      <ul class="pagination">
+        {% if short_urls.has_previous %}
+          <li><a href="?page={{ short_urls.previous_page_number }}">&laquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&laquo;</span></li>
+        {% endif %}
+        {% for i in short_urls.paginator.page_range %}
+          {% if short_urls.number == i %}
+            <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+          {% else %}
+            <li><a href="?page={{ i }}">{{ i }}</a></li>
+          {% endif %}
+        {% endfor %}
+        {% if short_urls.has_next %}
+          <li><a href="?page={{ short_urls.next_page_number }}">&raquo;</a></li>
+        {% else %}
+          <li class="disabled"><span>&raquo;</span></li>
+        {% endif %}
+      </ul>
+    {% endif %}
+    {% endif %}
+
+
+    <br>
+    <br>
+
+    {% if user.is_authenticated %}
+
+    <form method="post" action="{% url 'shortener:create_new_short_link' %}">
+    {% csrf_token %}
+    <input type="hidden" value={{ user.id }} name="user_id"/>
+    <input type="submit" name="" value="Generate new short url">
+
+    {% endif %}
+
+
+  </div>
+</div>
+{% endblock %}
