@@ -3,17 +3,14 @@ version: '3'
 services:
   db:
     image: postgres:10
-    volumes:
-      - postgres_data:/var/lib/postgresql/data/
+    ports:
+      - '5432:5432'
   web:
     build: .
-    command: bash -c "python /src/manage.py migrate --noinput && python /src/manage.py runserver 0.0.0.0:8000"
+    command: python src/manage.py runserver 0.0.0.0:8000
     volumes:
       - .:/code
     ports:
       - "8000:8000"
     depends_on:
       - db
-
-volumes:
-  postgres_data:
