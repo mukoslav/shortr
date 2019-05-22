@@ -9,7 +9,9 @@ from django.core.paginator import Paginator
 
 
 def index(request):
-    result = ShortURL.objects.filter(user_id=request.user.id)
+    if request.user.is_anonymous:
+        return HttpResponseRedirect(reverse('user:user_login'))
+    result = request.user.shorturl_set.all()
     paginator = Paginator(result, 10)
     page = request.GET.get('page')
     res = paginator.get_page(page)

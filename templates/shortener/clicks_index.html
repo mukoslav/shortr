@@ -15,7 +15,7 @@
     <tbody>
       {% for click in clicks %}
         <tr>
-          <td><a href="/shortener/clicks/{{ shorturl_id }}/{{ click.ip }}">{{ click.ip }}</a></td>
+          <td><a href="/shortener/click/{{ short_url_id }}/{{ click.ip }}">{{ click.ip }}</a></td>
           <td>{{ click.country }}</td>
           <td>{{ click.link_id }}</td>
           <td>{{ click.created_at }}</td>

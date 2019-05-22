@@ -21,7 +21,7 @@
       <tbody>
         {% for short_url in short_urls %}
           <tr>
-            <td><a href="/shortener/short_url/{{ short_url.id }}">{{ short_url }}</a></td>
+            <td><a href="/shortener/shorturl/{{ short_url.id }}">{{ short_url }}</a></td>
             <td>{{ short_url.default }}</td>
             <td>{{ short_url.active }}</td>
             <td>{{ short_url.created_at }}</td>

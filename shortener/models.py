@@ -1,12 +1,12 @@
 from django.db import models
 from django.urls import reverse
+from user.models import User
 from .utils import code_generator, create_shortcode
 
 
 class ShortURL(models.Model):
-    user_id = models.IntegerField(default=0)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     url = models.CharField(max_length=5, unique=True, default=None)
-    default = models.CharField(max_length=200, default='https://google.com')
     active = models.BooleanField(default=False)
     updated_at = models.DateTimeField(auto_now=True, null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
@@ -24,21 +24,22 @@ class ShortURL(models.Model):
 
 
 class Link(models.Model):
-    shorturl_id = models.IntegerField(default=0)
+    short_url = models.ForeignKey(ShortURL, on_delete=models.CASCADE)
     url = models.CharField(max_length=220)
     country_specific = models.CharField(max_length=20, default=None)
     weight = models.FloatField(null=True, blank=True, default=None)
     active = models.BooleanField(default=False)
+    default = models.BooleanField(default=False)
 
     def __str__(self):
-        return str(" | url: " + self.url + " | weight: " + str(self.weight) + " | country_specific: " + self.country_specific + " | active: " + str(self.active))
+        return str(self.url)
 
 
 class Click(models.Model):
     ip = models.CharField(max_length=20)
     country = models.CharField(max_length=20)
-    shorturl_id = models.IntegerField(default=0)
-    link_id = models.IntegerField(default=0)
+    short_url = models.ForeignKey(ShortURL, on_delete=models.CASCADE)
+    link = models.ForeignKey(Link, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True, null=True, blank=True)
 
     def __str__(self):

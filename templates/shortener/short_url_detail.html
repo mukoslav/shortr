@@ -1,19 +1,28 @@
 {% extends "shortener/base.html" %}
 {% block body_block %}
-<h3>SHORT URL: <span style="color:green";>{{ short_url.url }}</span></h3>
+
+{% if short_url.active %}
+  <input type="button" name={{ shared_link }} value="share this link" onclick="copyToClipboard(this)">
+  <h3>SHORT URL: <span style="color:green"; name="copy">{{ short_url.url }}</span></h3>
+{% else %}
+  <h3>SHORT URL: <span style="color:red";>{{ short_url.url }}</span></h3>
+{% endif %}
 
 <div>
-  <form name="f1" method="post" action="{% url 'shortener:update_default_link' short_url.id %}">
+  <form name="factivate" method="post" action="{% url 'shortener:toggle_short_link_active' short_url.id %}">
+    {% csrf_token %}
+    <button type='submit'>{% if short_url.active %}deactivate{% else %}activate{%endif%}</button>
+  </form>
+</div>
+
+<br>
+
+<div>
+  <form name="fupdate" method="post" action="{% url 'shortener:update_default_link' default_link.id %}">
   {% csrf_token %}
   <label for="default">default landing page: </label>
-  <input id="default" type="text" name="default" maxlength="220" value={{ short_url.default }}>
-  <label for="default">active: </label>
-  {% if short_url.active %}
-    <input id="active" type="checkbox" name="active" checked>
-  {% else %}
-    <input id="active" type="checkbox" name="active" >
-  {% endif %}
-  <input type="submit" name="a" value="Update short url">
+  <input id="default" type="text" name="default" maxlength="220" value={{ default_link.url }}>
+  <input type="submit" name="a" value="Update default url">
   </form>
 </div>
 
@@ -72,9 +81,9 @@
 
 {% if clicks.count > 0 %}
   <h4>STATS:</h4>
-  <p><a href="/shortener/clicks/{{ short_url.id }}">CLICKS</a></p>
+  <p><a href="/shortener/click/{{ short_url.id }}">CLICKS</a></p>
   <p> number of clicks: {{ clicks|length }} <p>
-  <p>last visitor: <a href="/shortener/clicks/{{ short_url.id }}/{{ clicks.last.ip }}">{{ clicks.last }}</a></p>
+  <p>last visitor: <a href="/shortener/click/{{ short_url.id }}/{{ clicks.last.ip }}">{{ clicks.last }}</a></p>
   <p> countries: {{ countries }} <p>
   <p> unique users: {{ users }} <p>
   <p> graph (number of clicks in last 24h):<p>
@@ -89,5 +98,17 @@
 
 <br>
 <br>
+
+<script>
+  function copyToClipboard(text) {
+    text = text.name
+    var dummy = document.createElement("textarea");
+    document.body.appendChild(dummy);
+    dummy.value = text;
+    dummy.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummy);
+}
+</script>
 
 {% endblock %}
