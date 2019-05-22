@@ -29,6 +29,7 @@ class ShortURLTestCase(TestCase):
                                          active=True,
                                          country_specific='rs, ch, us',
                                          weight=0.6)
+        self.client.login(username='gor3n', password='passpass')
 
     def test_short_url_generated(self):
         self.assertNotEqual(self.short_url, None)
@@ -55,7 +56,7 @@ class ShortURLTestCase(TestCase):
                   'country_specific': 'rs, ch, us',
                   'weight': 0.2}
         response = self.client.post(f'/shortener/shorturl/{self.short_url.id}/new_link', params)
-        self.link3 = Link.objects.last()
+        self.link3 = Link.objects.get(url='youtube.com')
         for k, v in params.items():
             self.assertEqual(getattr(self.link3,k), v)
         self.assertEqual(response.url, f'/shortener/shorturl/{ShortURL.objects.last().id}')
